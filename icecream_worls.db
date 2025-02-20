@@ -1,0 +1,82 @@
+-- Create the database
+CREATE DATABASE IceWorld;
+USE IceWorld;
+
+-- Table for categories of ice creams
+CREATE TABLE Categories (
+    category_id INT AUTO_INCREMENT PRIMARY KEY,
+    category_name VARCHAR(255) NOT NULL
+);
+
+-- Table for ice cream products
+CREATE TABLE IceCreams (
+    ice_cream_id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
+    description TEXT,
+    image_url VARCHAR(255),
+    category_id INT,
+    FOREIGN KEY (category_id) REFERENCES Categories(category_id) ON DELETE SET NULL
+);
+
+-- Table for customers
+CREATE TABLE Customers (
+    customer_id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    phone VARCHAR(15),
+    address TEXT
+);
+
+-- Table for orders
+CREATE TABLE Orders (
+    order_id INT AUTO_INCREMENT PRIMARY KEY,
+    customer_id INT,
+    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    total_price DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (customer_id) REFERENCES Customers(customer_id) ON DELETE CASCADE
+);
+
+-- Table for order details (many-to-many relationship between orders and ice creams)
+CREATE TABLE OrderDetails (
+    order_detail_id INT AUTO_INCREMENT PRIMARY KEY,
+    order_id INT,
+    ice_cream_id INT,
+    quantity INT NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (order_id) REFERENCES Orders(order_id) ON DELETE CASCADE,
+    FOREIGN KEY (ice_cream_id) REFERENCES IceCreams(ice_cream_id) ON DELETE CASCADE
+);
+
+-- Table for subscribers
+CREATE TABLE Subscribers (
+    subscriber_id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    subscribe_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Sample data for categories
+INSERT INTO Categories (category_name) VALUES 
+('Popular Ice-Creams'),
+('Most Selling Ice-Creams');
+
+-- Sample data for ice creams
+INSERT INTO IceCreams (name, price, description, image_url, category_id) VALUES 
+('Mango Tango Sorbet', 150.00, 'A tropical delight with the taste of ripe mangoes.', 'assets/popular-1.png', 1),
+('Chocolate Fudge Delight', 150.00, 'Rich and creamy chocolate indulgence.', 'assets/popular-2.png', 1),
+('Strawberry Swirl Bliss', 150.00, 'A fruity and creamy experience.', 'assets/popular-3.png', 1),
+('Double Chocolate Crunch', 99.00, 'Crunchy chocolate chunks in smooth ice cream.', 'assets/discover-1.jpg', 2),
+('Strawberry Cheesecake Bliss', 100.00, 'A creamy cheesecake-inspired treat.', 'assets/discover-2.jpg', 2),
+('Classic Cookies and Cream', 200.00, 'Vanilla ice cream with chocolate cookie bits.', 'assets/discover-3.jpg', 2);
+
+-- Sample data for customers
+INSERT INTO Customers (name, email, phone, address) VALUES 
+('John Doe', 'john.doe@example.com', '9876543210', '123, Main Street, City'),
+('Jane Smith', 'jane.smith@example.com', '9123456789', '456, Elm Street, Town');
+
+-- Sample order data
+INSERT INTO Orders (customer_id, total_price) VALUES (1, 300.00);
+INSERT INTO OrderDetails (order_id, ice_cream_id, quantity, price) VALUES (1, 1, 2, 300.00);
+
+-- Sample subscription data
+INSERT INTO Subscribers (email) VALUES ('subscriber@example.com');
